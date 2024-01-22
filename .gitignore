@@ -1,0 +1,5 @@
+#k8s
+k8s/.terraform
+k8s/variables.tf
+#vault
+vault/.terraform
