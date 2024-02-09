@@ -17,7 +17,7 @@ In this demo, we have three different applications accessing secrets:
 
 1. **App 1 (secret-kv)**: Static App that retrieves secrets from Vault. Use this to demonstrate VSO behaviour.
 
-2. **App 2 (nginx_tls_app)**: This is an NGINX application that retrieves an PKI certificate from Vault for HTTPS connection. Port 30443
+2. **App 2 (nginx_tls_app)**: This is an NGINX application that retrieves a PKI certificate from Vault for HTTPS connection. Port 30443
 
 3. **App 3 (vso-db-demo)**: Nginx Applications retrieves dynamic postgres credentials from Vault. Secrets rotate every 2mins. This can be adjusted. 
 
@@ -73,7 +73,7 @@ kubectl exec -n nginx $POD_NAME -- cat /etc/nginx/ssl/tls.crt > pod-cert.crt
 ```
 diff tls-cert.crt pod-cert.crt
 ```
-- #### if there is no difference bettwen these two files, then certificate chain is succesfully snyced. 
+- #### if there is no difference bettwen these two files, then certificate chain is succesfully synced. 
 - #### download and mark it to always trust certificate
 - #### visit https://localhost:30443
 
