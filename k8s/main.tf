@@ -41,12 +41,14 @@ resource "kubernetes_namespace" "app" {
   }
 }
 
+# Namespace in Kubernetes for dynamic secrets
 resource "kubernetes_namespace" "demo_ns" {
   metadata {
     name = "demo-ns"
   }
 }
 
+# Namespace in Kubernetes for TLS
 resource "kubernetes_namespace" "nginx" {
   metadata {
     name = "nginx"
