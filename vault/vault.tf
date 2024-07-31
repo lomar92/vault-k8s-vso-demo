@@ -53,11 +53,6 @@ resource "helm_release" "vault" {
   }
 
   set {
-    name  = "ui.serviceType"
-    value = "LoadBalancer"
-  }
-
-  set {
     name  = "ui.externalPort"
     value = "8200"
   }

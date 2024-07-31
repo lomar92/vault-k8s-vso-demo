@@ -10,7 +10,7 @@ sleep 10
 kubectl delete ns vault-secrets-operator-system
 kubectl create ns vault-secrets-operator-system
 helm uninstall vault-secrets-operator -n vault-secrets-operator-system
-helm install vault-secrets-operator hashicorp/vault-secrets-operator --version 0.4.3 -n vault-secrets-operator-system --values vault-operator-values.yaml
+helm install vault-secrets-operator hashicorp/vault-secrets-operator --version 0.8.1 -n vault-secrets-operator-system --values vault-operator-values.yaml
 
 sleep 10
 
@@ -18,9 +18,14 @@ sleep 10
 kubectl delete ns postgres
 kubectl create ns postgres
 helm uninstall postgres -n postgres
-helm upgrade --install postgres bitnami/postgresql --namespace postgres --set auth.audit.logConnections=true  --set auth.postgresPassword=secret-pass
+helm upgrade --install postgres oci://registry-1.docker.io/bitnamicharts/postgresql --namespace postgres --set auth.audit.logConnections=true  --set auth.postgresPassword=secret-pass
 
 sleep 30
+
+kubectl wait --for='jsonpath={.status.conditions[?(@.type=="Ready")].status}=True' --namespace vault pod/vault
+kubectl port-forward --namespace=vault service/vault 8200:8200 &
+kubectl wait --for='jsonpath={.status.conditions[?(@.type=="Ready")].status}=True' --namespace postgres pod/postgres
+kubectl port-forward --namespace=postgres service/postgres-postgresql 5432:5432 &
 
 cd ../k8s && terraform init 
 terraform apply --auto-approve
