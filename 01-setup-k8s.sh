@@ -4,27 +4,22 @@
 cd vault && terraform init 
 terraform apply --auto-approve
 
-sleep 10
+kubectl wait --timeout=60s --for=jsonpath='{.status.phase}'=Running --namespace vault po -l app.kubernetes.io/instance=vault
+kubectl port-forward --namespace=vault service/vault 8200:8200 &
 
 ## Install Vault VSO CRD
 kubectl delete ns vault-secrets-operator-system
 kubectl create ns vault-secrets-operator-system
 helm uninstall vault-secrets-operator -n vault-secrets-operator-system
-helm install vault-secrets-operator hashicorp/vault-secrets-operator --version 0.8.1 -n vault-secrets-operator-system --values vault-operator-values.yaml
-
-sleep 10
+helm install vault-secrets-operator hashicorp/vault-secrets-operator --version 0.8.1 -n vault-secrets-operator-system --values vault-operator-values.yaml --wait
 
 ## Deploy Postgres via Helm 
 kubectl delete ns postgres
 kubectl create ns postgres
 helm uninstall postgres -n postgres
-helm upgrade --install postgres oci://registry-1.docker.io/bitnamicharts/postgresql --namespace postgres --set auth.audit.logConnections=true  --set auth.postgresPassword=secret-pass
+helm upgrade --install postgres oci://registry-1.docker.io/bitnamicharts/postgresql --namespace postgres --set auth.audit.logConnections=true --set auth.postgresPassword=secret-pass --wait
 
-sleep 30
-
-kubectl wait --for='jsonpath={.status.conditions[?(@.type=="Ready")].status}=True' --namespace vault pod/vault
-kubectl port-forward --namespace=vault service/vault 8200:8200 &
-kubectl wait --for='jsonpath={.status.conditions[?(@.type=="Ready")].status}=True' --namespace postgres pod/postgres
+kubectl wait --timeout=60s --for=jsonpath='{.status.phase}'=Running --namespace postgres po -l app.kubernetes.io/instance=postgres
 kubectl port-forward --namespace=postgres service/postgres-postgresql 5432:5432 &
 
 cd ../k8s && terraform init 
@@ -33,7 +28,7 @@ terraform apply --auto-approve
 # view k8s ressources
 kubectl get ns
 kubectl get pods -n vault 
-kubectl get pods -n vault-secrets-operator
+kubectl get pods -n vault-secrets-operator-system
 kubectl get pods -n postgres
 kubectl get pods -n demo-ns 
 kubectl get pods -n nginx
