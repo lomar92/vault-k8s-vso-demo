@@ -31,6 +31,7 @@ resource "helm_release" "vault" {
   chart            = "vault"
   namespace        = "vault"
   create_namespace = true
+  wait_for_jobs    = true
 
   set {
     name  = "server.dev.enabled"
