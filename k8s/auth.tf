@@ -114,7 +114,7 @@ resource "kubernetes_manifest" "vso_db_demo" {
       mount = "demo-db"
       path  = "creds/${vault_database_secret_backend_role.dev_postgres.name}"
       destination = {
-        create = false
+        create = true
         name   = "vso-db-demo"
       }
       rolloutRestartTargets = [
@@ -147,14 +147,6 @@ resource "kubernetes_manifest" "dynamic_auth" {
     }
   }
 }
-
-resource "kubernetes_secret" "vso_db_demo" {
-  metadata {
-    name      = "vso-db-demo"
-    namespace = kubernetes_namespace.demo_ns.metadata[0].name
-  }
-}
-
 
 # TLS Auth
 resource "kubernetes_manifest" "tls_auth" {

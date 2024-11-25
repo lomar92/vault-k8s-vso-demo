@@ -63,7 +63,7 @@ resource "vault_kubernetes_auth_backend_role" "auth_role" {
 
 # App Deployment with mounted secret
 resource "kubernetes_deployment" "vso_db_demo" {
-  depends_on = [kubernetes_secret.vso_db_demo]
+  depends_on = [kubernetes_manifest.vso_db_demo]
   metadata {
     name      = "vso-db-demo"
     namespace = kubernetes_namespace.demo_ns.metadata[0].name
